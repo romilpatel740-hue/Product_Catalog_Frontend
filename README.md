@@ -1,19 +1,70 @@
-# React + Vite
+# React Product Catalog
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fast, responsive e-commerce product showcase built with **React** and **Vite**. This application dynamically fetches product data—including titles, descriptions, ratings, prices, and images—from a REST API endpoint and displays them in a modern card grid layout.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Dynamic Data Fetching**: Retrieves real-time product list from API using custom React hooks and asynchronous HTTP requests.
+- **Loading & Error Handling**: Built-in state management for smooth loading indicators and graceful API failure handling.
+- **Product Routing**: Includes individual product view routes (`/product/:id`) for detailed item specifications.
+- **Modern UI**: Clean grid layout displaying ratings, dynamic pricing, and product previews.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **Frontend**: React, Vite, JavaScript (ES6+)
+- **Data Fetching**: Native Fetch API / Axios
+- **Routing**: React Router DOM
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+## API Fetching Example
 
-## Expanding the ESLint configuration
+Below is the core logic used in the application to fetch product data asynchronously:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```javascript
+import { useState, useEffect } from 'react';
+
+export default function ProductList() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('[https://dummyjson.com/products](https://dummyjson.com/products)');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setProducts(data.products);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) return <div>Loading products...</div>;
+  if (error) return <div>Error fetching products: {error}</div>;
+
+  return (
+    <div className="product-grid">
+      {products.map((product) => (
+        <div key={product.id} className="product-card">
+          <img src={product.thumbnail} alt={product.title} />
+          <h2>{product.title}</h2>
+          <p>{product.description}</p>
+          <div className="card-footer">
+            <span>⭐ {product.rating}</span>
+            <strong>${product.price}</strong>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+Getting Started
+Prerequisites
+Ensure you have Node.js (v16 or higher) installed.
